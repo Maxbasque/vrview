@@ -50,6 +50,17 @@ function onLoad() {
   vrView.on('ready', onVRViewReady);
   vrView.on('modechange', onModeChange);
   vrView.on('error', onVRViewError);
+
+    vrView.on('ready', function(event) {
+        vrView.addHotspot('my_spot', {
+            pitch: 0, // In degrees. Up is positive.
+            yaw: 0, // In degrees. To the right is positive.
+            radius: 0.20, // Radius of the circular target in meters.
+            distance: 1, // Distance of target from camera in meters.
+            activeColor: '#fff', // Distance of target from camera in meters.
+            inactiveColor: '#000'
+        });
+    });
 }
 
 function loadScene(id) {
@@ -90,6 +101,8 @@ function onVRViewReady(e) {
 
   loadScene('petra');
 }
+
+
 
 function onModeChange(e) {
   console.log('onModeChange', e.mode);

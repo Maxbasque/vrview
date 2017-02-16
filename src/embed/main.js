@@ -142,8 +142,10 @@ function onAddHotspot(e) {
   var yaw = parseFloat(e.yaw);
   var radius = parseFloat(e.radius);
   var distance = parseFloat(e.distance);
+  var activeColor = e.activeColor;
+  var inactiveColor = e.inactiveColor;
   var id = e.id;
-  worldRenderer.hotspotRenderer.add(pitch, yaw, radius, distance, id);
+  worldRenderer.hotspotRenderer.add(pitch, yaw, radius, distance, id, activeColor, inactiveColor);
 }
 
 function onSetContent(e) {

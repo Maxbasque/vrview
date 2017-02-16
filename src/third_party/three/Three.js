@@ -21,6 +21,7 @@ export { ColorKeywords, Color } from '../../../node_modules/three/src/math/Color
 export { TorusGeometry } from '../../../node_modules/three/src/geometries/TorusGeometry.js';
 export { SphereGeometry } from '../../../node_modules/three/src/geometries/SphereGeometry.js';
 export { CircleGeometry } from '../../../node_modules/three/src/geometries/CircleGeometry.js';
+export { ConeGeometry } from '../../../node_modules/three/src/geometries/ConeGeometry.js';
 export { RingGeometry } from '../../../node_modules/three/src/geometries/RingGeometry.js';
 export * from '../../../node_modules/three/src/constants.js';
 

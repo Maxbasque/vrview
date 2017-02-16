@@ -90,16 +90,21 @@ HotspotRenderer.prototype = new EventEmitter();
  * @param distance {Number} The distance of the hotspot from camera, specified
  * in meters.
  * @param hotspotId {String} The ID of the hotspot.
+ * @param activeColor {String} The color of the hotspot.
+ * @param inactiveColor {String} The color of the hotspot.
  */
-HotspotRenderer.prototype.add = function(pitch, yaw, radius, distance, id) {
+HotspotRenderer.prototype.add = function(pitch, yaw, radius, distance, id, activeColor, inactiveColor) {
   // If a hotspot already exists with this ID, stop.
   if (this.hotspots[id]) {
     // TODO: Proper error reporting.
     console.error('Attempt to add hotspot with existing id %s.', id);
     return;
   }
-  var hotspot = this.createHotspot_(radius, distance);
+  var hotspot = this.createHotspot_(radius, distance, activeColor, inactiveColor);
   hotspot.name = id;
+
+  INACTIVE_COLOR = new THREE.Color(inactiveColor);
+  ACTIVE_COLOR = new THREE.Color(activeColor);
 
   // Position the hotspot based on the pitch and yaw specified.
   var quat = new THREE.Quaternion();
@@ -221,7 +226,6 @@ HotspotRenderer.prototype.onTouchEnd_ = function(e) {
     this.emit('click');
     return;
   }
-
   // Only emit a click if the finger was down on the same hotspot before.
   for (var id in this.downHotspots) {
     this.emit('click', id);
@@ -280,32 +284,51 @@ HotspotRenderer.prototype.getSize_ = function() {
   return this.worldRenderer.renderer.getSize();
 };
 
-HotspotRenderer.prototype.createHotspot_ = function(radius, distance) {
-  var innerGeometry = new THREE.CircleGeometry(radius, 32);
+HotspotRenderer.prototype.createHotspot_ = function(radius, distance, _activeColor, _inactiveColor) {
+  // var innerGeometry = new THREE.CircleGeometry(radius, 32);
+  var innerGeometry = new THREE.ConeGeometry( radius, radius, 32 );
+  var activeColor = _activeColor;
+  var inactiveColor = _inactiveColor;
 
-  var innerMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff, side: THREE.DoubleSide, transparent: true,
-    opacity: MAX_INNER_OPACITY, depthTest: false
-  });
+  if(!activeColor.trim()) { activeColor = 0xffffff };
+  if(!inactiveColor.trim()) { inactiveColor = 0xffffff };
 
-  var inner = new THREE.Mesh(innerGeometry, innerMaterial);
-  inner.name = 'inner';
+      var innerMaterial = new THREE.MeshBasicMaterial({
+          color: inactiveColor, side: THREE.DoubleSide, transparent: true,
+          opacity: MAX_INNER_OPACITY, depthTest: false
+      });
 
-  var outerMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff, side: THREE.DoubleSide, transparent: true,
-    opacity: MAX_OUTER_OPACITY, depthTest: false
-  });
-  var outerGeometry = new THREE.RingGeometry(radius * 0.85, radius, 32);
-  var outer = new THREE.Mesh(outerGeometry, outerMaterial);
-  outer.name = 'outer';
+      var inner = new THREE.Mesh(innerGeometry, innerMaterial);
+      inner.name = 'inner';
 
-  // Position at the extreme end of the sphere.
-  var hotspot = new THREE.Object3D();
-  hotspot.position.z = -distance;
-  hotspot.scale.set(NORMAL_SCALE);
+      var outerMaterial = new THREE.MeshBasicMaterial({
+          color: inactiveColor, side: THREE.DoubleSide, transparent: true,
+          opacity: MAX_OUTER_OPACITY, depthTest: false
+      });
+      // var outerGeometry = new THREE.RingGeometry(radius * 0.85, radius, 32);
+      var outerGeometry = new THREE.ConeGeometry( radius, radius, 32 );
+      var outer = new THREE.Mesh(outerGeometry, outerMaterial);
+      outer.name = 'outer';
 
-  hotspot.add(inner);
-  hotspot.add(outer);
+      // Position at the extreme end of the sphere.
+      var hotspot = new THREE.Object3D();
+      hotspot.position.z = -distance;
+      hotspot.scale.set(NORMAL_SCALE);
+
+      // hotspot.add(inner);
+      hotspot.add(outer);
+  
+// var geometry = new THREE.ConeGeometry( 5, 20, 32 );
+// var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+// var cone = new THREE.Mesh( geometry, material );
+
+//   var hotspot = new THREE.Object3D();
+//       hotspot.position.z = -distance;
+//       hotspot.scale.set(NORMAL_SCALE);
+
+
+// hotspot.add( cone );
+
 
   return hotspot;
 };
@@ -364,7 +387,7 @@ HotspotRenderer.prototype.blur_ = function(id) {
 HotspotRenderer.prototype.down_ = function(id) {
   // Become active.
   var hotspot = this.hotspots[id];
-  var outer = hotspot.getObjectByName('inner');
+  var outer = hotspot.getObjectByName('outer');
 
   this.tween = new TWEEN.Tween(outer.material.color).to(ACTIVE_COLOR, ACTIVE_DURATION)
       .start();
@@ -373,7 +396,7 @@ HotspotRenderer.prototype.down_ = function(id) {
 HotspotRenderer.prototype.up_ = function(id) {
   // Become inactive.
   var hotspot = this.hotspots[id];
-  var outer = hotspot.getObjectByName('inner');
+  var outer = hotspot.getObjectByName('outer');
 
   this.tween = new TWEEN.Tween(outer.material.color).to(INACTIVE_COLOR, ACTIVE_DURATION)
       .start();
@@ -382,10 +405,10 @@ HotspotRenderer.prototype.up_ = function(id) {
 HotspotRenderer.prototype.setOpacity_ = function(id, opacity) {
   var hotspot = this.hotspots[id];
   var outer = hotspot.getObjectByName('outer');
-  var inner = hotspot.getObjectByName('inner');
+  // var inner = hotspot.getObjectByName('inner');
 
   outer.material.opacity = opacity * MAX_OUTER_OPACITY;
-  inner.material.opacity = opacity * MAX_INNER_OPACITY;
+  // inner.material.opacity = opacity * MAX_INNER_OPACITY;
 };
 
 module.exports = HotspotRenderer;

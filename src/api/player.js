@@ -65,12 +65,15 @@ Player.prototype = new EventEmitter();
  */
 Player.prototype.addHotspot = function(hotspotId, params) {
   // TODO: Add validation to params.
+
   var data = {
     pitch: params.pitch,
     yaw: params.yaw,
     radius: params.radius,
     distance: params.distance,
-    id: hotspotId
+    id: hotspotId,
+    activeColor: params.activeColor,
+    inactiveColor: params.inactiveColor
   };
   this.sender.send({type: Message.ADD_HOTSPOT, data: data});
 };
