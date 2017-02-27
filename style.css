@@ -87,6 +87,9 @@ canvas:active {
 	align-items: center;
   justify-content: center;
 }
+.webvr-button{
+  display:none!important;
+}
 #play-overlay.visible {
 	display: flex;
 }

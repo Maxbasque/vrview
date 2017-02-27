@@ -172,6 +172,7 @@ Player.prototype.onMessage_ = function(event) {
  * CSS. To do this cleanly, we also inject a stylesheet.
  */
 Player.prototype.setFakeFullscreen_ = function(isFullscreen) {
+  console.log('fs test');
   if (isFullscreen) {
     this.iframe.classList.add(FAKE_FULLSCREEN_CLASS);
   } else {
@@ -180,6 +181,7 @@ Player.prototype.setFakeFullscreen_ = function(isFullscreen) {
 };
 
 Player.prototype.injectFullscreenStylesheet_ = function() {
+  
   var styleString = [
     'iframe.' + FAKE_FULLSCREEN_CLASS,
     '{',

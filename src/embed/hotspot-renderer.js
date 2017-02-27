@@ -27,7 +27,7 @@ var ACTIVE_DURATION = 100;
 
 // Constants for opacity.
 var MAX_INNER_OPACITY = 0.8;
-var MAX_OUTER_OPACITY = 0.5;
+var MAX_OUTER_OPACITY = 0.8;
 var FADE_START_ANGLE_DEG = 35;
 var FADE_END_ANGLE_DEG = 60;
 /**
@@ -285,8 +285,8 @@ HotspotRenderer.prototype.getSize_ = function() {
 };
 
 HotspotRenderer.prototype.createHotspot_ = function(radius, distance, _activeColor, _inactiveColor) {
-  // var innerGeometry = new THREE.CircleGeometry(radius, 32);
-  var innerGeometry = new THREE.ConeGeometry( radius, radius, 32 );
+  var innerGeometry = new THREE.CircleGeometry(radius, 32);
+  // var innerGeometry = new THREE.ConeGeometry( radius, radius, 32 );
   var activeColor = _activeColor;
   var inactiveColor = _inactiveColor;
 
@@ -305,8 +305,8 @@ HotspotRenderer.prototype.createHotspot_ = function(radius, distance, _activeCol
           color: inactiveColor, side: THREE.DoubleSide, transparent: true,
           opacity: MAX_OUTER_OPACITY, depthTest: false
       });
-      // var outerGeometry = new THREE.RingGeometry(radius * 0.85, radius, 32);
-      var outerGeometry = new THREE.ConeGeometry( radius, radius, 32 );
+      var outerGeometry = new THREE.RingGeometry(radius * 0.85, radius, 32);
+      // var outerGeometry = new THREE.ConeGeometry( radius*0.6, radius, 32 );
       var outer = new THREE.Mesh(outerGeometry, outerMaterial);
       outer.name = 'outer';
 
@@ -315,19 +315,9 @@ HotspotRenderer.prototype.createHotspot_ = function(radius, distance, _activeCol
       hotspot.position.z = -distance;
       hotspot.scale.set(NORMAL_SCALE);
 
-      // hotspot.add(inner);
+      hotspot.add(inner);
       hotspot.add(outer);
-  
-// var geometry = new THREE.ConeGeometry( 5, 20, 32 );
-// var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-// var cone = new THREE.Mesh( geometry, material );
 
-//   var hotspot = new THREE.Object3D();
-//       hotspot.position.z = -distance;
-//       hotspot.scale.set(NORMAL_SCALE);
-
-
-// hotspot.add( cone );
 
 
   return hotspot;
@@ -371,9 +361,14 @@ HotspotRenderer.prototype.focus_ = function(id) {
   var hotspot = this.hotspots[id];
 
   // Tween scale of hotspot.
-  this.tween = new TWEEN.Tween(hotspot.scale).to(FOCUS_SCALE, FOCUS_DURATION)
-      .easing(TWEEN.Easing.Quadratic.InOut)
-      .start();
+  // this.tween = new TWEEN.Tween(hotspot.scale).to(FOCUS_SCALE, FOCUS_DURATION)
+  //     .easing(TWEEN.Easing.Quadratic.InOut)
+  //     .start();
+    
+  this.tween = new TWEEN.Tween(hotspot.scale).to(FOCUS_SCALE, FOCUS_DURATION);
+  this.tween.chain(this.tween);
+  this.tween.start();
+  
 };
 
 HotspotRenderer.prototype.blur_ = function(id) {
@@ -387,7 +382,7 @@ HotspotRenderer.prototype.blur_ = function(id) {
 HotspotRenderer.prototype.down_ = function(id) {
   // Become active.
   var hotspot = this.hotspots[id];
-  var outer = hotspot.getObjectByName('outer');
+  var outer = hotspot.getObjectByName('inner');
 
   this.tween = new TWEEN.Tween(outer.material.color).to(ACTIVE_COLOR, ACTIVE_DURATION)
       .start();
@@ -396,7 +391,7 @@ HotspotRenderer.prototype.down_ = function(id) {
 HotspotRenderer.prototype.up_ = function(id) {
   // Become inactive.
   var hotspot = this.hotspots[id];
-  var outer = hotspot.getObjectByName('outer');
+  var outer = hotspot.getObjectByName('inner');
 
   this.tween = new TWEEN.Tween(outer.material.color).to(INACTIVE_COLOR, ACTIVE_DURATION)
       .start();

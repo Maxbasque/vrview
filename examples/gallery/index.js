@@ -55,10 +55,10 @@ function onLoad() {
         vrView.addHotspot('my_spot', {
             pitch: 0, // In degrees. Up is positive.
             yaw: 0, // In degrees. To the right is positive.
-            radius: 0.20, // Radius of the circular target in meters.
+            radius: 0.25, // Radius of the circular target in meters.
             distance: 1, // Distance of target from camera in meters.
-            activeColor: '#fff', // Distance of target from camera in meters.
-            inactiveColor: '#000'
+            activeColor: '#2ee831', // Distance of target from camera in meters.
+            inactiveColor: '#ff0ad6'
         });
     });
 }
