@@ -23959,9 +23959,8 @@ THREE.VREffect = function ( renderer, onError ) {
 	var fullscreenElement;
 	var leftBounds = [ 0.0, 0.0, 0.5, 1.0 ];
 	var rightBounds = [ 0.5, 0.0, 0.5, 1.0 ];
-	
+
 	function onFullscreenChange() {
-		
 
 		var wasPresenting = scope.isPresenting;
 		scope.isPresenting = vrDisplay !== undefined && vrDisplay.isPresenting;
